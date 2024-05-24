@@ -1,9 +1,8 @@
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors"; // Import the cors middleware
+import cors from "cors";
 import authRoutes from "./routes/authRoutes";
 import setupSwagger from "./config/swagger";
-import "./express"; // Ensure this import includes your custom types
 
 declare global {
   namespace Express {
