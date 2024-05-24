@@ -9,7 +9,16 @@ dotenv.config();
 const secretKey = process.env.JWT_SECRET as string;
 
 export const registerUser = async (username: string, password: string) => {
-  return await User.create({ username, password });
+  try {
+    const existingUser = await User.findOne({ where: { username } });
+    if (existingUser) {
+      throw new Error("Username already exists");
+    }
+    const user = await User.create({ username, password });
+    return user;
+  } catch (error) {
+    throw new Error((error as string) || "Error registering user");
+  }
 };
 
 export const loginUser = async (username: string, password: string) => {

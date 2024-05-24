@@ -2,6 +2,11 @@ import { Request, Response } from "express";
 import { registerUser, loginUser, getUserById } from "../services/authService";
 import { convertToJalali } from "../utils/string";
 import { UserAttributes } from "../models/user";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const BASE_URL = process.env.URL as string;
 
 interface ProfileUser extends UserAttributes {
   createdAt: Date;
@@ -50,12 +55,20 @@ export const profile = async (req: Request, res: Response) => {
     const createdAt = dataValues.createdAt
       ? new Date(dataValues.createdAt)
       : new Date();
+
+    // todo add .env
+    const avatarUrl = dataValues.avatar
+      ? `${BASE_URL}/${dataValues.avatar}`
+      : null;
+
     const response: Pick<
       ProfileUser,
-      "timestamps" | "jalaliCreatedAt" | "username"
+      "timestamps" | "jalaliCreatedAt" | "username" | "avatar" | "id"
     > = {
       username: dataValues.username,
       timestamps: createdAt.getTime(),
+      avatar: avatarUrl,
+      id: dataValues.id,
       jalaliCreatedAt: convertToJalali(createdAt.toISOString()),
     };
 
