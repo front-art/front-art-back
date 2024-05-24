@@ -1,8 +1,10 @@
 import express from "express";
-import cors from "cors";
+import cors from "cors"; // Import the cors middleware
 import authRoutes from "./routes/authRoutes";
 import setupSwagger from "./config/swagger";
+import "./express"; // Ensure this import includes your custom types
 
+const app = express();
 declare global {
   namespace Express {
     interface Request {
@@ -10,12 +12,9 @@ declare global {
     }
   }
 }
-
-const app = express();
-// Configure CORS
+// Configure CORS to allow all origins
 const corsOptions = {
-  // origin: ["http://example.com", "http://anotherdomain.com"], // Replace with your allowed origins
-  origin: "*", // allow any origin
+  origin: "*", // Allow all origins
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
@@ -27,6 +26,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 
+// Set up Swagger
 setupSwagger(app);
 
 export default app;
