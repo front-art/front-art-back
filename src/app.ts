@@ -1,8 +1,11 @@
+import cors from "cors";
+import path from "path";
 import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
-import authRoutes from "./routes/authRoutes";
+import bodyParser from "body-parser";
 import setupSwagger from "./config/swagger";
+import authRoutes from "./routes/authRoutes";
+import profileRoutes from "./routes/profileRoutes";
 
 declare global {
   namespace Express {
@@ -22,12 +25,17 @@ const corsOptions = {
   optionsSuccessStatus: 204,
 };
 
-app.use(cors(corsOptions)); // Use the cors middleware
-
-app.use(express.json());
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/api/", authRoutes);
-
+app.use("/uploads", express.static("uploads"));
+app.use(
+  "/api/",
+  profileRoutes,
+  express.static(path.join(__dirname, "uploads"))
+);
 // Set up Swagger
 setupSwagger(app);
 

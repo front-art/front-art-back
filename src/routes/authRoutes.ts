@@ -1,5 +1,3 @@
-// src/routes/authRoutes.ts
-
 import express from "express";
 import { register, login, profile } from "../controllers/authController";
 import { authenticateToken } from "../middleware/authMiddleware";

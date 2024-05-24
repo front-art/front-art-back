@@ -9,6 +9,7 @@ export interface UserAttributes {
   createdAt?: Date;
   updatedAt?: Date;
   timestamps?: number;
+  avatar?: string | null;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, "id"> {}
@@ -23,6 +24,12 @@ class User
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
   public readonly timestamps!: number;
+  public avatar?: string | null;
+
+  // Method to compare passwords
+  public async comparePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
 }
 
 User.init(
@@ -41,11 +48,25 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
-    modelName: "user",
-    timestamps: true, // Enable timestamps to automatically manage createdAt and updatedAt
+    modelName: "User",
+    timestamps: true,
   }
 );
 
@@ -54,12 +75,19 @@ User.beforeCreate(async (user) => {
   user.password = await bcrypt.hash(user.password, salt);
 });
 
+User.beforeUpdate(async (user) => {
+  if (user.changed("password")) {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+  }
+});
+
 sequelize
   .sync()
   .then(() => {
     console.log("Database synchronized");
   })
-  .catch((error: any) => {
+  .catch((error) => {
     console.error("Error synchronizing database", error);
   });
 
