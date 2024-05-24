@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "my-app",
+      name: "frontart-back",
       script: "./dist/server.js", // Path to the entry point of your app
       instances: "max", // Or a number of instances
       exec_mode: "cluster", // Enables cluster mode
@@ -10,6 +10,9 @@ module.exports = {
       },
       env_production: {
         NODE_ENV: "production",
+        DATABASE_URL: process.env.DATABASE_URL,
+        JWT_SECRET: process.env.JWT_SECRET,
+        PORT: process.env.PORT,
       },
     },
   ],
